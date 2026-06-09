@@ -36,9 +36,11 @@ Der KI-Assistent übersetzt die Frage in eine Datenbankabfrage und liefert die A
 ## Voraussetzungen
 
 - **ADVOKAT** mit MS SQL Server 2019 (oder neuer)
-- **Python 3.11+** (empfohlen: 3.12 via Homebrew auf macOS)
-- **FreeTDS** (macOS: `brew install freetds`)
-- **Claude Desktop**, **MSTY Studio** oder ein anderer MCP-Client
+- **Python 3.11+**
+  - macOS: empfohlen via [Homebrew](https://brew.sh) — `brew install python@3.12`
+  - Windows: [python.org](https://www.python.org/downloads/) → Installer, „Add to PATH" aktivieren
+- **FreeTDS** — **nur macOS/Linux** nötig: `brew install freetds` (Windows: nicht erforderlich)
+- **Claude Desktop**, **MSTY Studio**, **LM Studio** oder ein anderer MCP-Client
 
 ---
 
@@ -66,10 +68,10 @@ ALTER ROLE db_datareader ADD MEMBER advokat_mcp;
 ### Named Instance: TCP-Port ermitteln
 
 Bei ADVOKAT läuft SQL Server typischerweise als named instance (z.B. `SERVER\ADVOKAT`).
-Den dynamischen TCP-Port einmalig so ermitteln (macOS/Linux Terminal):
+Den dynamischen TCP-Port einmalig so ermitteln (Terminal / PowerShell / CMD):
 
 ```bash
-python3 -c "
+python -c "
 import socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 sock.settimeout(3)
@@ -83,14 +85,16 @@ In der Ausgabe den Wert bei `tcp=XXXXX` ablesen und als `ADVOKAT_DB_PORT` eintra
 
 ---
 
-## Installation (macOS)
+## Installation
+
+### macOS
 
 ```bash
 # Repository klonen
-git clone https://github.com/DEIN_USERNAME/advokat-connect-mcp.git
+git clone https://github.com/HeinzTempl/advokat-connect-mcp.git
 cd advokat-connect-mcp
 
-# Python venv erstellen (mit Homebrew Python 3.12)
+# Python venv erstellen
 /opt/homebrew/bin/python3.12 -m venv venv
 
 # pymssql mit FreeTDS kompilieren + mcp installieren
@@ -105,13 +109,35 @@ venv/bin/python -c "import mcp; print('mcp:', mcp.__version__)"
 
 > Tipp: `setup_macos.command` doppelklicken für automatisches Setup.
 
+### Windows
+
+Auf Windows gibt es fertige pymssql-Pakete — kein Kompilieren, kein FreeTDS:
+
+```powershell
+# Repository klonen
+git clone https://github.com/HeinzTempl/advokat-connect-mcp.git
+cd advokat-connect-mcp
+
+# Python venv erstellen
+python -m venv venv
+
+# Pakete installieren (einfach, kein FreeTDS nötig)
+venv\Scripts\pip install -r requirements.txt
+
+# Installation prüfen
+venv\Scripts\python -c "import pymssql; print('pymssql:', pymssql.__version__)"
+venv\Scripts\python -c "import mcp; print('mcp:', mcp.__version__)"
+```
+
 ---
 
 ## Konfiguration
 
 Die Datenbankzugangsdaten werden als Umgebungsvariablen übergeben — nie im Code, nie in git.
 
-### Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`)
+### Claude Desktop
+
+**macOS** — Konfigurationsdatei: `~/Library/Application Support/Claude/claude_desktop_config.json`
 
 ```json
 {
@@ -130,14 +156,34 @@ Die Datenbankzugangsdaten werden als Umgebungsvariablen übergeben — nie im Co
 }
 ```
 
+**Windows** — Konfigurationsdatei: `%APPDATA%\Claude\claude_desktop_config.json`
+
+```json
+{
+  "mcpServers": {
+    "advokat": {
+      "command": "C:\\Users\\DEINNAME\\advokat-connect-mcp\\venv\\Scripts\\python.exe",
+      "args": ["C:\\Users\\DEINNAME\\advokat-connect-mcp\\advokat_mcp_server.py"],
+      "env": {
+        "ADVOKAT_DB_HOST": "IP-DES-SERVERS",
+        "ADVOKAT_DB_PORT": "49689",
+        "ADVOKAT_DB_USER": "advokat_mcp",
+        "ADVOKAT_DB_PASS": "IhrPasswort"
+      }
+    }
+  }
+}
+```
+
 Nach dem Speichern Claude Desktop neu starten.
 
-### MSTY Studio — mit lokalem Modell (vollständig privat)
+### MSTY Studio / LM Studio — mit lokalem Modell (vollständig privat)
 
 1. **Settings → Toolbox → Add New Tool**
 2. Transport: **STDIO / JSON**
 3. JSON-Konfiguration eintragen:
 
+**macOS:**
 ```json
 {
   "command": "/Users/DEINNAME/advokat-connect-mcp/venv/bin/python",
@@ -151,10 +197,24 @@ Nach dem Speichern Claude Desktop neu starten.
 }
 ```
 
+**Windows:**
+```json
+{
+  "command": "C:\\Users\\DEINNAME\\advokat-connect-mcp\\venv\\Scripts\\python.exe",
+  "args": ["C:\\Users\\DEINNAME\\advokat-connect-mcp\\advokat_mcp_server.py"],
+  "env": {
+    "ADVOKAT_DB_HOST": "IP-DES-SERVERS",
+    "ADVOKAT_DB_PORT": "49689",
+    "ADVOKAT_DB_USER": "advokat_mcp",
+    "ADVOKAT_DB_PASS": "IhrPasswort"
+  }
+}
+```
+
 4. Name: `ADVOKAT Connect` → **Add**
 5. Als Modell ein lokales Modell mit Tool Calling wählen (z.B. **Qwen3 6B** oder **Gemma 4** via Ollama oder LM Studio)
 
-Mit MSTY und einem lokalen Modell bleiben **alle Anfragen und Kanzleidaten lokal** — es werden keine Daten an externe Server übertragen.
+Mit einem lokalen Modell bleiben **alle Anfragen und Kanzleidaten lokal** — es werden keine Daten an externe Server übertragen.
 
 ---
 
