@@ -1,14 +1,14 @@
-# ADVOKAT Connect — MCP Server
+# MCP-Server für ADVOKAT
 
 **ADVOKAT** ist die meistverbreitete Anwaltssoftware in Österreich und wird von tausenden Kanzleien für Aktenführung, Leistungserfassung, Dokumentenverwaltung und Buchhaltung genutzt.
 
-Dieser Server ist ein unabhängiges Community-Projekt und steht in **keiner Verbindung mit der ADVOKAT Unternehmensberatung GREITER & GREITER GmbH**.
+Dieses Projekt ist ein unabhängiges Community-Projekt und steht in **keiner Verbindung mit der ADVOKAT Unternehmensberatung GREITER & GREITER GmbH**.
 
 ---
 
 ## Was ist das?
 
-ADVOKAT Connect ist ein [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) Server, der KI-Assistenten direkt mit der ADVOKAT-Datenbank verbindet — ohne Bildschirmsteuerung, direkt via SQL.
+Dieser MCP-Server verbindet KI-Assistenten direkt mit der ADVOKAT-Datenbank — ohne Bildschirmsteuerung, direkt via SQL. [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) ist ein offener Standard, der es KI-Assistenten erlaubt, externe Werkzeuge und Datenquellen zu nutzen.
 
 Statt mühsam durch Menüs zu navigieren, kann man einfach in natürlicher Sprache fragen:
 
@@ -91,7 +91,7 @@ In der Ausgabe den Wert bei `tcp=XXXXX` ablesen und als `ADVOKAT_DB_PORT` eintra
 
 ```bash
 # Repository klonen
-git clone https://github.com/HeinzTempl/advokat-connect-mcp.git
+git clone https://github.com/HeinzTempl/mcp-for-advokat.git
 cd advokat-connect-mcp
 
 # Python venv erstellen
@@ -115,7 +115,7 @@ Auf Windows gibt es fertige pymssql-Pakete — kein Kompilieren, kein FreeTDS:
 
 ```powershell
 # Repository klonen
-git clone https://github.com/HeinzTempl/advokat-connect-mcp.git
+git clone https://github.com/HeinzTempl/mcp-for-advokat.git
 cd advokat-connect-mcp
 
 # Python venv erstellen

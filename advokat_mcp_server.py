@@ -69,7 +69,7 @@ def fmt(data: Any) -> str:
 
 # ── MCP Server ─────────────────────────────────────────────────────────────────
 
-server = Server("advokat-connect")
+server = Server("mcp-for-advokat")
 
 
 @server.list_tools()
